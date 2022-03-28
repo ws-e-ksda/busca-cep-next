@@ -52,7 +52,7 @@ export default function BuscarCep(){
         if(infoStatus){
             if(infoStatus.statusErro){
                 toastMessage = {
-                    severity: "error",
+                    severity: "warn",
                     summary: "Erro na requisição",
                     detail: "CEP consultado não foi encontrado na base de dados"
                 }
@@ -61,29 +61,41 @@ export default function BuscarCep(){
             const cepService = new CepService();
             const response = await cepService.getAdress(cepWithoutMask);
 
-            if(response.erro){
+            // Tratando erro 502
+            if(response.badRequest){
+                toastMessage = {
+                    severity: "error",
+                    summary: "Erro na requisição",
+                    detail: "Falha ao tentar buscar CEP"
+                }
+
                 infoStatus = {
                     info: [],
                     statusErro: true
                 };
-
-                toastMessage = {
-                    severity: "error",
-                    summary: "Erro na requisição",
-                    detail: "CEP consultado não foi encontrado na base de dados"
-                }
             }else{
-                infoStatus = {
-                    info: [response],
-                    statusErro: false
-                };
+                if(response.erro){
+                    infoStatus = {
+                        info: [],
+                        statusErro: true
+                    };
+    
+                    toastMessage = {
+                        severity: "warn",
+                        summary: "Erro na requisição",
+                        detail: "CEP consultado não foi encontrado na base de dados"
+                    }
+                }else{
+                    infoStatus = {
+                        info: [response],
+                        statusErro: false
+                    };
+                }
+                // Atualiza o mapa
+                const _historic = new Map(historic);
+                _historic.set(cepWithoutMask, infoStatus);
+                setHistoric(_historic);
             }
-
-            // Atualiza o mapa
-            const _historic = new Map(historic);
-            _historic.set(cepWithoutMask, infoStatus);
-            setHistoric(_historic);
-
         }   
 
         setInfo(infoStatus.info);
