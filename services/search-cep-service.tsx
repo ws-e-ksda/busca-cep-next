@@ -1,8 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
-class SearchCepService{
-   
-    async getInfoCep(cep:string) {
+class CepService{
+    async getAdress(cep:string) {
 
         const url = `https://viacep.com.br/ws/${cep}/json`;
         let options: AxiosRequestConfig = {
@@ -13,6 +12,10 @@ class SearchCepService{
         let response = await axios(options);
         return response.data;
     }
+
+//     async function getCep(params:) {
+        
+//     }
 }
 
-export default SearchCepService;
+export default CepService;
