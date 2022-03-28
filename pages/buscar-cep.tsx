@@ -2,7 +2,8 @@
 import { useState, useRef } from 'react';
 
 // Primereact
-import { InputMask } from "primereact/inputmask";
+import { InputText } from 'primereact/inputtext';
+import { Dropdown }   from 'primereact/dropdown';
 import { Button }    from 'primereact/button';
 import { Toast }     from 'primereact/toast';
 
@@ -17,24 +18,27 @@ import { InfoStatus } from '../models/infoStatus';
 // Serviço
 import CepService from '../services/search-cep-service';
 
-// ------------------------------------------------------- \\
-
 export default function BuscarCep(){
 
-    const [cep, setCep] = useState(""); // CEP input
-    const onChangeCep = (e: any) => setCep(e.target.value);
+    const ufs = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 
+                'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 
+                'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS',
+                'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
 
-    const [buttonLoading, setButtonLoading] = useState(false); // Button submit
-    const [buttonCheckIcon, setButtonCheckIcon] = useState("pi pi-check");
+    const [selectedUF, setSelectedUF] = useState("");
+    const [city, setCity] = useState("");
+    const [publicPlace, setPublicPlace] = useState("");
 
     const [info, setInfo] = useState<Array<Data>>([]); // Infos da tabela
     const [historic, setHistoric] = useState(new Map()); // Histórico de ceps pesquisados
+    
+    const [buttonLoading, setButtonLoading] = useState(false); // Button submit
+    const [buttonCheckIcon, setButtonCheckIcon] = useState("pi pi-check");
 
     const toast: any = useRef(null);
-
-    const handleSubmitForm = async(e: any) => {
+    
+    const handleSubmitForm = async (e: any) => {
         e.preventDefault();
-  
         setButtonLoading(true);
         setButtonCheckIcon("");
         
@@ -45,98 +49,78 @@ export default function BuscarCep(){
             detail:   "CEP buscado com sucesso"
         }
 
-        const cepWithoutMask = cep.replace("-", "").replace(".", "");
-
-        // Verifica se está no mapa
-        let infoStatus: InfoStatus = historic.get(cepWithoutMask);
-        if(infoStatus){
-            if(infoStatus.statusErro){
-                toastMessage = {
-                    severity: "warn",
-                    summary: "Erro na requisição",
-                    detail: "CEP consultado não foi encontrado na base de dados"
-                }
+        const paramsCep = {
+            uf: selectedUF,
+            city: city,
+            publicPlace: publicPlace
+        }
+        const cepService = new CepService();
+        const response = await cepService.getCep(paramsCep);
+        
+        // Tratando erro 502
+        if(response.badRequest){
+            toastMessage = {
+                severity: "error",
+                summary: "Erro na requisição",
+                detail: "Falha ao tentar buscar CEP"
             }
-        }else{ // Se não está no mapa, faz nova requisição
-            const cepService = new CepService();
-            const response = await cepService.getAdress(cepWithoutMask);
-
-            // Tratando erro 502
-            if(response.badRequest){
-                toastMessage = {
-                    severity: "error",
-                    summary: "Erro na requisição",
-                    detail: "Falha ao tentar buscar CEP"
-                }
-
-                infoStatus = {
-                    info: [],
-                    statusErro: true
-                };
-            }else{
-                if(response.erro){
-                    infoStatus = {
-                        info: [],
-                        statusErro: true
-                    };
-    
-                    toastMessage = {
-                        severity: "warn",
-                        summary: "Erro na requisição",
-                        detail: "CEP consultado não foi encontrado na base de dados"
-                    }
-                }else{
-                    infoStatus = {
-                        info: [response],
-                        statusErro: false
-                    };
-                }
-                // Atualiza o mapa
-                const _historic = new Map(historic);
-                _historic.set(cepWithoutMask, infoStatus);
-                setHistoric(_historic);
+        }else if(response.length == 0){
+            toastMessage = {
+                severity: "warn", 
+                summary:  "Requisição concluída", 
+                detail:   "Não foram encontrados registros no banco de dados"
             }
-        }   
+        }
 
-        setInfo(infoStatus.info);
-
+        setInfo(response);
         setButtonLoading(false);
         setButtonCheckIcon("pi pi-check");
 
-        // Mensagem de feedback
+        // Mensagem feedback
         toast.current.show({...toastMessage});
     }
 
-    return (
+    return(
         <Panel title="Buscar CEP">
-            <form onSubmit={handleSubmitForm} >
-                <div className='sm:inline-flex'> 
-                    <div className='field'>
-                        <label htmlFor='cep' className='block'>CEP</label>
-                        <span className = "p-input-icon-left block w-10rem">    
-                            <i className = "pi pi-search"/>
-                            <InputMask className='p-inputtext inputfield w-full'
-                                id = "cep"
-                                value={cep}
-                                placeholder = "99.999-999"
+            <form onSubmit={handleSubmitForm}>
+                <div  className="inline-flex">
+                    <div className="field">
+                        <label htmlFor="uf" className="block" >UF</label>
+                        <Dropdown className="mr-3" id="uf" placeholder="Ex.: RJ"
+                                value={selectedUF}
+                                options={ufs}
                                 required
-                                mask='99.999-999'
-                                onChange={onChangeCep}
-                            />
-                        </span>
+                                onChange={(e) => setSelectedUF(e.target.value)}/>
+                    </div>
+
+                    <div className="field">
+                        <label htmlFor="cidade" className="block">Cidade</label>
+                        <InputText className="mr-3" id="cidade" placeholder="Ex.: Rio de Janeiro" 
+                                value={city}
+                                required
+                                minLength={3}
+                                onChange={(e) => setCity(e.target.value)}/>
+                    </div>
+                    <div className='field'>
+                        <label htmlFor="logradouro" className="block">Logradouro</label>
+                        <InputText className="mr-3" id="logradouro" placeholder="Ex.: Rua do Rocha" 
+                                value={publicPlace}
+                                required
+                                minLength={3}
+                                onChange={(e) => setPublicPlace(e.target.value)}/>
                     </div>
                     <div className='flex align-content-end flex-wrap'>
-                        <Button className = "p-button  align-self-center mb-4 mt-3 block sm:ml-3 sm:mt-0"
+                        <Button className = "p-button align-self-center mb-4"
                             label = 'Enviar'
                             icon  = {buttonCheckIcon}
                             loading = {buttonLoading}
                             type='submit'
                         />
-                    </div>
+                    </div>                  
                 </div>
             </form>
-            <DataTableCep value = {info}/>
+            <DataTableCep value = {info} sortable={true} paginator={true}/>
             <Toast ref={toast} className="primary"/>
-        </Panel>            
+        </Panel>
     );
 }
