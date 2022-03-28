@@ -13,10 +13,11 @@ import { Panel }        from '../components/Panel';
 
 // Models
 import { Data } from '../models/data';
-import { InfoStatus } from '../models/infoStatus';
 
 // Serviço
 import CepService from '../services/search-cep-service';
+
+// ------------------------------------------------------- \\
 
 export default function BuscarCep(){
 
@@ -83,8 +84,8 @@ export default function BuscarCep(){
     return(
         <Panel title="Buscar CEP">
             <form onSubmit={handleSubmitForm}>
-                <div  className="inline-flex">
-                    <div className="field">
+                <div className="md:inline-flex">
+                    <div className="field block">
                         <label htmlFor="uf" className="block" >UF</label>
                         <Dropdown className="mr-3" id="uf" placeholder="Ex.: RJ"
                                 value={selectedUF}
@@ -93,7 +94,7 @@ export default function BuscarCep(){
                                 onChange={(e) => setSelectedUF(e.target.value)}/>
                     </div>
 
-                    <div className="field">
+                    <div className="field block">
                         <label htmlFor="cidade" className="block">Cidade</label>
                         <InputText className="mr-3" id="cidade" placeholder="Ex.: Rio de Janeiro" 
                                 value={city}
@@ -101,7 +102,7 @@ export default function BuscarCep(){
                                 minLength={3}
                                 onChange={(e) => setCity(e.target.value)}/>
                     </div>
-                    <div className='field'>
+                    <div className="field block">
                         <label htmlFor="logradouro" className="block">Logradouro</label>
                         <InputText className="mr-3" id="logradouro" placeholder="Ex.: Rua do Rocha" 
                                 value={publicPlace}
