@@ -5,8 +5,14 @@ import { Button } from 'primereact/button';
 // Next
 import Link from 'next/link';
 import Head from 'next/head';
+import { ReactChild } from 'react';
 
-export const Panel = (props: any) =>{
+interface PanelProps{
+    title: string;
+    children: ReactChild[];
+}
+
+export const Panel = ( {title, children}: PanelProps) =>{
     return (
         <>
             <Head>
@@ -20,9 +26,9 @@ export const Panel = (props: any) =>{
                         <a></a>
                     </Button>
                 </Link>
-                <h1 className='text-primary'>{props.title}</h1>
+                <h1 className='text-primary'>{title}</h1>
                 {/* Forms */}
-                {props.children}
+                {children}
                 
             </Card>
         </>
