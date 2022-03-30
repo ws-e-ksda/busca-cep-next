@@ -19,7 +19,7 @@ import CepService from '../services/search-cep-service';
 
 // ------------------------------------------------------- \\
 
-export default function BuscarEndereco(){
+export default function ConsultarCep(){
 
     const [cep, setCep] = useState(""); // CEP input
     const onChangeCep = (e: any) => setCep(e.target.value);
@@ -59,7 +59,7 @@ export default function BuscarEndereco(){
             }
         }else{ // Se não está no mapa, faz nova requisição
             const cepService = new CepService();
-            const response = await cepService.getAdress(cepWithoutMask);
+            const response = await cepService.getCep(cepWithoutMask);
 
             // Tratando erro 502
             if(response.badRequest){
@@ -108,7 +108,7 @@ export default function BuscarEndereco(){
     }
 
     return (
-        <Panel title="Buscar endereço">
+        <Panel title="Consultar cep">
             <form onSubmit={handleSubmitForm} >
                 <div className='sm:inline-flex'> 
                     <div className='field'>

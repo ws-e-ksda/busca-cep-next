@@ -6,7 +6,7 @@ import { DataAdress } from '../models/data-endereco';
 
 class CepService{
     prefix: string = "https://viacep.com.br/ws";
-    async getAdress(cep:string) {
+    async getCep(cep:string) {
 
         const url = `${this.prefix}/${cep}/json`;
         let options: AxiosRequestConfig = {
@@ -24,7 +24,7 @@ class CepService{
         return response;
     }
 
-    async getCep(params: DataAdress) {
+    async getAdress(params: DataAdress) {
 
         const url =  `${this.prefix}/${params.uf}/${params.city}/${params.publicPlace}/json`;
         let options: AxiosRequestConfig = {

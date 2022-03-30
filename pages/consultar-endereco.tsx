@@ -19,7 +19,7 @@ import CepService from '../services/search-cep-service';
 
 // ------------------------------------------------------- \\
 
-export default function BuscarCep(){
+export default function ConsultarEndereco(){
 
     const ufs = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 
                 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 
@@ -56,7 +56,7 @@ export default function BuscarCep(){
             publicPlace: publicPlace
         }
         const cepService = new CepService();
-        const response = await cepService.getCep(paramsCep);
+        const response = await cepService.getAdress(paramsCep);
         
         // Tratando erro 502
         if(response.badRequest){
@@ -82,7 +82,7 @@ export default function BuscarCep(){
     }
 
     return(
-        <Panel title="Buscar CEP">
+        <Panel title="Consultar endereço">
             <form onSubmit={handleSubmitForm}>
                 <div className="md:inline-flex">
                     <div className="field block">
