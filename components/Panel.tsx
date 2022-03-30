@@ -9,7 +9,7 @@ import { ReactChild } from 'react';
 
 interface PanelProps{
     title: string;
-    children: ReactChild[];
+    children: ReactChild | ReactChild[];
 }
 
 export const Panel = ( {title, children}: PanelProps) =>{
