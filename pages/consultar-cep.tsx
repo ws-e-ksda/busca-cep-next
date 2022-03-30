@@ -22,15 +22,18 @@ import CepService from '../services/search-cep-service';
 export default function ConsultarCep(){
 
     const [cep, setCep] = useState(""); // CEP input
-    const onChangeCep = (e: any) => setCep(e.target.value);
-
+    
     const [buttonLoading, setButtonLoading] = useState(false); // Button submit
     const [buttonCheckIcon, setButtonCheckIcon] = useState("pi pi-check");
 
     const [info, setInfo] = useState<Array<Data>>([]); // Infos da tabela
     const [historic, setHistoric] = useState(new Map()); // Histórico de ceps pesquisados
 
+    const cepService = new CepService();
+
     const toast: any = useRef(null);
+
+    const onChangeCep = (e: any) => setCep(e.target.value);
 
     const handleSubmitForm = async(e: any) => {
         e.preventDefault();
@@ -58,23 +61,11 @@ export default function ConsultarCep(){
                 }
             }
         }else{ // Se não está no mapa, faz nova requisição
-            const cepService = new CepService();
-            const response = await cepService.getCep(cepWithoutMask);
-
-            // Tratando erro 502
-            if(response.badRequest){
-                toastMessage = {
-                    severity: "error",
-                    summary: "Erro na requisição",
-                    detail: "Falha ao tentar buscar CEP"
-                }
-
-                infoStatus = {
-                    info: [],
-                    statusErro: true
-                };
-            }else{
-                if(response.erro){
+            
+            try{
+                const response = await cepService.getCep(cepWithoutMask);   
+                // console.log(response);
+                if(response.data.erro){
                     infoStatus = {
                         info: [],
                         statusErro: true
@@ -87,14 +78,27 @@ export default function ConsultarCep(){
                     }
                 }else{
                     infoStatus = {
-                        info: [response],
+                        info: [response.data],
                         statusErro: false
                     };
                 }
+
                 // Atualiza o mapa
                 const _historic = new Map(historic);
                 _historic.set(cepWithoutMask, infoStatus);
                 setHistoric(_historic);
+            }catch(error:any){
+
+                toastMessage = {
+                    severity: "error",
+                    summary: "Erro na requisição",
+                    detail: "Falha ao tentar buscar CEP"
+                }
+    
+                infoStatus = {
+                    info: [],
+                    statusErro: true
+                };
             }
         }   
 
@@ -104,39 +108,41 @@ export default function ConsultarCep(){
         setButtonCheckIcon("pi pi-check");
 
         // Mensagem de feedback
-        toast.current.show({...toastMessage});
+        toast.current.show(toastMessage);
     }
 
     return (
-        <Panel title="Consultar cep">
-            <form onSubmit={handleSubmitForm} >
-                <div className='sm:inline-flex'> 
-                    <div className='field'>
-                        <label htmlFor='cep' className='block'>CEP</label>
-                        <span className = "p-input-icon-left block w-10rem">    
-                            <i className = "pi pi-search"/>
-                            <InputMask className='p-inputtext inputfield w-full'
-                                id = "cep"
-                                value={cep}
-                                placeholder = "99.999-999"
-                                required
-                                mask='99.999-999'
-                                onChange={onChangeCep}
+        <>
+            <Panel title="Consultar cep">
+                <form onSubmit={handleSubmitForm} >
+                    <div className='sm:inline-flex'> 
+                        <div className='field'>
+                            <label htmlFor='cep' className='block'>CEP</label>
+                            <span className = "p-input-icon-left block w-10rem">    
+                                <i className = "pi pi-search"/>
+                                <InputMask className='p-inputtext inputfield w-full'
+                                    id = "cep"
+                                    value={cep}
+                                    placeholder = "99.999-999"
+                                    required
+                                    mask='99.999-999'
+                                    onChange={onChangeCep}
+                                />
+                            </span>
+                        </div>
+                        <div className='flex align-content-end flex-wrap'>
+                            <Button className = "p-button  align-self-center mb-4 mt-3 block sm:ml-3 sm:mt-0"
+                                label = 'Enviar'
+                                icon  = {buttonCheckIcon}
+                                loading = {buttonLoading}
+                                type='submit'
                             />
-                        </span>
+                        </div>
                     </div>
-                    <div className='flex align-content-end flex-wrap'>
-                        <Button className = "p-button  align-self-center mb-4 mt-3 block sm:ml-3 sm:mt-0"
-                            label = 'Enviar'
-                            icon  = {buttonCheckIcon}
-                            loading = {buttonLoading}
-                            type='submit'
-                        />
-                    </div>
-                </div>
-            </form>
-            <DataTableCep value = {info}/>
+                </form>
+                <DataTableCep value = {info}/>
+            </Panel>            
             <Toast ref={toast} className="primary"/>
-        </Panel>            
+        </>
     );
 }
