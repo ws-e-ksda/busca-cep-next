@@ -1,3 +1,6 @@
+// Next
+import { GetStaticPaths, GetStaticProps } from 'next';
+
 // Componenetes
 import { Panel } from '../../components/Panel';
 import { DataTableCep } from '../../components/DataTableCep';
@@ -8,15 +11,6 @@ import CepService from '../../services/search-cep-service';
 // Models
 import { Data } from '../../models/data';
 
-// Primereact
-import { Toast } from 'primereact/toast';
-
-// Hooks
-import { useEffect, useRef, useState } from 'react';
-
-// Next
-import { GetStaticPaths, GetStaticProps } from 'next';
-
 export const getStaticPaths: GetStaticPaths = async () => {
 
     return {
@@ -25,41 +19,34 @@ export const getStaticPaths: GetStaticPaths = async () => {
     }
 }
 
+interface InfoCep {
+    info: Data[];
+    cep: string;
+}
+
 export const getStaticProps: GetStaticProps = async (context: any) => {
-    
+
     const cepService = new CepService();
-    let res = await cepService.getCep(context.params.cep);
-    
+
+    let data: InfoCep;
+    try {
+        const res = await cepService.getCep(context.params.cep);
+        data = { info: [res.data], cep: res.data.cep }
+    } catch {
+        data = { info: [], cep: "CEP não encontrado. Tente novamente." }
+    }
+
     return {
-        props:{ response: res }
+        props: { response: data as InfoCep}
     }
 }
 
-export default function Cep({response}: any){
-    
-    const toast: any = useRef(null);
-
-    let toastMessage = {
-        severity: "success", 
-        summary:  "Requisição concluída", 
-        detail:   "CEP buscado com sucesso"
-    }
-
-    let info:Array<Data> = [];
-    let cep = "CEP não encontrado. Tente novamente.";
-
-    if(!response.badRequest){
-        if(!response.erro){
-            info = [response];
-            cep = `CEP: ${response.cep}`;
-        }
-    }
-
-    // toast.current.show({...toastMessage});
+export default function Cep({ response }: any) {
     return (
-        <Panel title={`${cep}`}>
-            <DataTableCep value={info}/>
-            <Toast ref={toast} className="primary"/>
-        </Panel>
+        <>
+            <Panel title={response.cep}>
+                <DataTableCep value={response.info} />
+            </Panel>
+        </>
     );
 }
