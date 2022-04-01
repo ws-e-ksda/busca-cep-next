@@ -1,21 +1,18 @@
 // Next.js
 import type { NextPage } from 'next';
-import Head              from 'next/head';
 import Link              from 'next/link';
 
 // Primereact
 import { Button }       from 'primereact/button';
-import { Card }         from 'primereact/card';
+
+// Componentes
+import { Panel } from '../components/Panel';
 
 const Home: NextPage = () => {
   
     return(
       <>
-        <Head>
-          <title>Busca CEP</title>
-          <link rel="icon" href="/brasil.ico" />
-        </Head>
-        <Card className="card shadow-5 border-50 border-round border-1 m-3">
+        <Panel backButton={false}>
           <h1 className="text-primary flex justify-content-center">O que você deseja encontrar?</h1>
           
           <div id="links" className='flex justify-content-center align-content-center p-3'>
@@ -29,9 +26,8 @@ const Home: NextPage = () => {
                 <a >Consultar endereço</a>
               </Button>
             </Link>
-            
           </div>
-        </Card>
+        </Panel>
       </>
     );
 
