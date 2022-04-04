@@ -128,7 +128,7 @@ export default function ConsultarEndereco(){
                 </form>
                 <DataTableCep value = {info} sortable={true} paginator={true}/>
             </Panel>
-            <Toast ref={toast} className="primary"/>
+            <Toast ref={toast} className="primary" position='bottom-right'/>
         </>
     );
 }

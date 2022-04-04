@@ -142,7 +142,7 @@ export default function ConsultarCep(){
                 </form>
                 <DataTableCep value = {info}/>
             </Panel>            
-            <Toast ref={toast} className="primary"/>
+            <Toast ref={toast} className="primary" position='bottom-right'/>
         </>
     );
 }
