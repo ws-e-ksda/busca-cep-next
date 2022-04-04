@@ -24,14 +24,10 @@ const Home: NextPage = () => {
         <h1 className="text-primary flex justify-content-center">O que você deseja encontrar?</h1>
         <div id="links" className='flex justify-content-center align-content-center p-3'>
           <Link href="consultar-cep">
-            <Button className='p-button-link p-button-raised ml-2'>
-              <a >Consultar CEP</a>
-            </Button>
+            <Button className='p-button-text p-button-raised' label='Consultar CEP'/>
           </Link>
           <Link href="consultar-endereco">
-            <Button className='p-button-link p-button-raised mr-2'>
-              <a >Consultar endereço</a>
-            </Button>
+            <Button className='p-button-text p-button-raised' label='Consultar endereço'/>
           </Link>
         </div>
       </Panel>

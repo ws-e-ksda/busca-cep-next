@@ -19,16 +19,12 @@ interface PanelProps{
 }
 
 export const Panel = ( {title, children, backButton = true}: PanelProps) =>{
-    const {data: session} = useSession();
-
     const header =  
     <div className={backButton?"flex justify-content-between m-3":"flex justify-content-end m-3"}>
         {backButton &&
             <Link href="/">
                 <Button className="p-button-outlined p-button-sm"
-                        icon="pi pi-arrow-left" >
-                    <a></a>
-                </Button>
+                        icon="pi pi-arrow-left" />
             </Link>
         }
         <Button label="Sair" icon="pi pi-sign-out" 
