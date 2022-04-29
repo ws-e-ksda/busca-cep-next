@@ -14,7 +14,9 @@ import { Panel } from '../components/Panel';
 
 const header = <Image alt='card' src="/background-header-login.jpg" width="150" height="150"/>
 const footer = <Button label='Entrar' icon={"pi pi-github"} 
-                       className="p-button-outlined" onClick={() => signIn('github', {callbackUrl: '/'})}/>
+                       className="p-button-outlined" 
+                       onClick={() => signIn('github', {callbackUrl: '/'})}
+                />
 
 const Home: NextPage = () => {
   const {data: session} = useSession({required: true});

@@ -64,7 +64,6 @@ export default function ConsultarCep(){
             
             try{
                 const response = await cepService.getCep(cepWithoutMask);   
-                // console.log(response);
                 if(response.data.erro){
                     infoStatus = {
                         info: [],
